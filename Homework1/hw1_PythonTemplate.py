@@ -1,4 +1,4 @@
-# Problem: Implement the Breadth-First Search (BFS), Depth-First Search (DFS) 
+# Problem: Implement the Breadth-First Search (BFS), Depth-First Search (DFS)
 # and Greedy Best-First Search (GBFS) algorithms on the graph from Figure 1 in hw1.pdf.
 
 
@@ -9,13 +9,80 @@
 #    It should return a list of all node labels (strings) that were expanded in the order they where expanded.
 #    If there is a tie for which node is expanded next, expand the one that comes first in the alphabet.
 # 3. You should only modify the graph representation and the function body below where indicated.
-# 4. Do not modify the function signature or provided test cases. You may add helper functions. 
+# 4. Do not modify the function signature or provided test cases. You may add helper functions.
 # 5. Upload the completed homework to Gradescope, it must be named 'hw1.py'.
 
 # Examples:
 #     The test cases below call each search function on node 'S' and node 'A'
 # -----------------------------
 
+from functools import cmp_to_key
+
+
+class Graph:
+    """
+    Essentially a dictionary where {a: b} == {b: a}
+    """
+    adjacency_map: dict[str, dict[str, int]]
+
+    def __init__(self, adjacency_list: list[tuple[str, str, int]]) -> None:
+        self.adjacency_map = {}
+        for entry in adjacency_list:
+            self.adjacency_map[entry[0]] = {entry[1]: entry[2]}
+
+    def __getitem__(self, key: str) -> dict[str, int]:
+        return self.adjacency_map[key]
+
+    def __setitem__(self, key: str, value: dict[str, int]) -> None:
+        self.adjacency_map[key] = value
+        for key2 in value:
+            value2 = value[key]
+            self.adjacency_map[key2][key] = value2
+
+    def __delitem__(self, key: str) -> None:
+        value = self.adjacency_map[key]
+        for key2 in value:
+            del self.adjacency_map[key2][key]
+        del self.adjacency_map
+
+    def __iter__(self):
+        return self.adjacency_map.__iter__()
+
+    def get_nodes(self, key: str) -> list[tuple[str, int]]:
+        list = [(key, 0)]
+        value = self.adjacency_map[key]
+        for key2 in value:
+            list.append((key2, value[key2]))
+
+        # Sort by weights
+        list.sort(key=cmp_to_key(lambda a, b: a[1] - b[1]))
+        return list
+
+graph = Graph([
+    ('A', 'B', 4),
+    ('A', 'E', 1),
+    ('B', 'C', 2),
+    ('B', 'F', 2),
+    ('C', 'H', 4),
+    ('C', 'S', 3),
+    ('D', 'L', 8),
+    ('D', 'S', 2),
+    ('E', 'F', 3),
+    ('E', 'I', 6),
+    ('F', 'J', 6),
+    ('F', 'K', 4),
+    ('G', 'N', 4),
+    ('G', 'M', 4),
+    ('G', 'Q', 10),
+    ('H', 'K', 3),
+    ('H', 'L', 7),
+    ('I', 'J', 1),
+    ('I', 'M', 5),
+    ('J', 'N', 3),
+    ('K', 'L', 9),
+    ('K', 'P', 3),
+    ('L', 'Q', 10)
+])
 
 def BFS(start: str) -> list:
     # START: Your code here
@@ -40,24 +107,24 @@ def GBFS(start: str) -> list:
 def run_tests():
     # Test case 1: BFS starting from node 'A'
     assert BFS('A') == ['A', 'B', 'E', 'C', 'F', 'I', 'H', 'S', 'J', 'K', 'M', 'G'], "Test case 1 failed"
-    
+
     # Test case 2: BFS starting from node 'S'
     assert BFS('S') == ['S', 'C', 'D', 'B', 'H', 'L', 'A', 'F', 'K', 'Q', 'G'], "Test case 2 failed"
 
     # Test case 3: DFS starting from node 'A'
     assert DFS('A') == ['A', 'B', 'C', 'H', 'K', 'F', 'E', 'I', 'J', 'N', 'G'], "Test case 3 failed"
-    
+
     # Test case 4: DFS starting from node 'S'
     assert DFS('S') == ['S', 'C', 'B', 'A', 'E', 'F', 'J', 'I', 'M', 'G'], "Test case 4 failed"
 
     # Test case 5: GBFS starting from node 'A'
     assert GBFS('A') == ['A', 'B', 'F', 'J', 'N', 'G'], "Test case 5 failed"
-    
+
     # Test case 6: GBFS starting from node 'S'
     assert GBFS('S') == ['S', 'C', 'B', 'F', 'J', 'N', 'G'], "Test case 6 failed"
 
-    
-    
+
+
     print("All test cases passed!")
 
 if __name__ == '__main__':
