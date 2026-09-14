@@ -28,7 +28,7 @@ class Graph:
     def __init__(self, adjacency_list: list[tuple[str, str, int]]) -> None:
         self.adjacency_map = {}
         for entry in adjacency_list:
-            self.adjacency_map[entry[0]] = {entry[1]: entry[2]}
+            self.set(entry[0], entry[1], entry[2])
 
     def __getitem__(self, key: str) -> dict[str, int]:
         return self.adjacency_map[key]
@@ -48,14 +48,22 @@ class Graph:
     def __iter__(self):
         return self.adjacency_map.__iter__()
 
-    def get_nodes(self, key: str) -> list[tuple[str, int]]:
+    def set(self, a: str, b: str, x: int):
+        if self.adjacency_map.get(a) is None:
+            self.adjacency_map[a] = {}
+        if self.adjacency_map.get(b) is None:
+            self.adjacency_map[b] = {}
+        self.adjacency_map[a][b] = x
+        self.adjacency_map[b][a] = x
+
+    def get_edges(self, key: str) -> list[tuple[str, int]]:
         list = [(key, 0)]
-        value = self.adjacency_map[key]
+        value = self.adjacency_map.get(key, {})
         for key2 in value:
             list.append((key2, value[key2]))
 
-        # Sort by weights
-        list.sort(key=cmp_to_key(lambda a, b: a[1] - b[1]))
+        # Sort by key
+        #list.sort(key=cmp_to_key(lambda a, b: a[1] - b[1]))
         return list
 
 graph = Graph([
@@ -85,23 +93,57 @@ graph = Graph([
 ])
 
 def BFS(start: str) -> list:
-    # START: Your code here
-    return []
-    # END: Your code here
+    print(f"BFS from {start}")
+    list = []
+    visited: set[str] = set(start)
+    queue = [start]
+    while len(queue) > 0:
+        current_edge = queue.pop(0)
+        list.append(current_edge)
+
+        edges = graph.get_edges(list[-1])
+        for (edge, _) in edges:
+            if edge == 'G':
+                list.append(edge)
+                return list
+
+            elif edge not in visited:
+                print(f'{current_edge} -> {edge}')
+                visited.add(edge)
+                queue.append(edge)
+
+
+    return list
 
 
 def DFS(start: str) -> list:
-    # START: Your code here
-    return []
-    # END: Your code here
+    print(f"DFS from {start}")
+    list = []
+    visited: set[str] = set(start)
+    stack = [start]
+    while len(stack) > 0:
+        current_edge = stack.pop()
+        list.append(current_edge)
+
+        edges = graph.get_edges(list[-1])
+        for (edge, _) in edges:
+            if edge == 'G':
+                list.append(edge)
+                return list
+
+            elif edge not in visited:
+                print(f'{current_edge} -> {edge}')
+                visited.add(edge)
+                stack.append(edge)
+                break
+
+    return list
 
 
 def GBFS(start: str) -> list:
     # START: Your code here
     return []
     # END: Your code here
-
-
 
 # test cases - DO NOT MODIFY THESE
 def run_tests():
