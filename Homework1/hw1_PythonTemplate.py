@@ -16,7 +16,8 @@
 #     The test cases below call each search function on node 'S' and node 'A'
 # -----------------------------
 
-from functools import cmp_to_key
+from collections import deque
+from heapq import heappop, heappush
 
 
 class Graph:
@@ -29,24 +30,6 @@ class Graph:
         self.adjacency_map = {}
         for entry in adjacency_list:
             self.set(entry[0], entry[1], entry[2])
-
-    def __getitem__(self, key: str) -> dict[str, int]:
-        return self.adjacency_map[key]
-
-    def __setitem__(self, key: str, value: dict[str, int]) -> None:
-        self.adjacency_map[key] = value
-        for key2 in value:
-            value2 = value[key]
-            self.adjacency_map[key2][key] = value2
-
-    def __delitem__(self, key: str) -> None:
-        value = self.adjacency_map[key]
-        for key2 in value:
-            del self.adjacency_map[key2][key]
-        del self.adjacency_map
-
-    def __iter__(self):
-        return self.adjacency_map.__iter__()
 
     def set(self, a: str, b: str, x: int):
         if self.adjacency_map.get(a) is None:
@@ -62,8 +45,6 @@ class Graph:
         for key2 in value:
             list.append((key2, value[key2]))
 
-        # Sort by key
-        #list.sort(key=cmp_to_key(lambda a, b: a[1] - b[1]))
         return list
 
 graph = Graph([
@@ -86,25 +67,49 @@ graph = Graph([
     ('H', 'L', 7),
     ('I', 'J', 1),
     ('I', 'M', 5),
+    ('J', 'K', 3),
     ('J', 'N', 3),
     ('K', 'L', 9),
     ('K', 'P', 3),
-    ('L', 'Q', 10)
+    ('L', 'Q', 10),
+    ('N', 'P', 2)
 ])
+
+# Heuristic
+h = {
+    'S': 17,
+    'A': 17,
+    'B': 9,
+    'C': 16,
+    'D': 21,
+    'E': 13,
+    'F': 9,
+    'G': 0,
+    'H': 12,
+    'I': 9,
+    'J': 5,
+    'K': 8,
+    'L': 18,
+    'M': 3,
+    'N': 4,
+    'P': 6,
+    'Q': 9
+}
 
 def BFS(start: str) -> list:
     print(f"BFS from {start}")
     list = []
-    visited: set[str] = set(start)
-    queue = [start]
+    visited = {start}
+    queue = deque(start)
     while len(queue) > 0:
-        current_edge = queue.pop(0)
+        current_edge = queue.popleft()
         list.append(current_edge)
 
-        edges = graph.get_edges(list[-1])
+        edges = graph.get_edges(current_edge)
         for (edge, _) in edges:
             if edge == 'G':
                 list.append(edge)
+                print(list)
                 return list
 
             elif edge not in visited:
@@ -112,23 +117,24 @@ def BFS(start: str) -> list:
                 visited.add(edge)
                 queue.append(edge)
 
-
+    print(list)
     return list
 
-
+# Same as BFS, but with a stack
 def DFS(start: str) -> list:
     print(f"DFS from {start}")
     list = []
-    visited: set[str] = set(start)
+    visited = {start}
     stack = [start]
     while len(stack) > 0:
         current_edge = stack.pop()
         list.append(current_edge)
 
-        edges = graph.get_edges(list[-1])
+        edges = graph.get_edges(current_edge)
         for (edge, _) in edges:
             if edge == 'G':
                 list.append(edge)
+                print(list)
                 return list
 
             elif edge not in visited:
@@ -137,13 +143,33 @@ def DFS(start: str) -> list:
                 stack.append(edge)
                 break
 
+    print(list)
     return list
 
-
+# Similar to the previous two, but with a min heap sorted by h(n)
 def GBFS(start: str) -> list:
-    # START: Your code here
-    return []
-    # END: Your code here
+    print(f"GBFS from {start}")
+    list = []
+    visited = {start}
+    min_heap = [(h[start], start)]
+    while len(min_heap) > 0:
+        current_edge = heappop(min_heap)[1]
+        list.append(current_edge)
+
+        edges = graph.get_edges(current_edge)
+        for (edge, _) in edges:
+            if edge == 'G':
+                list.append(edge)
+                print(list)
+                return list
+
+            elif edge not in visited:
+                print(f'{current_edge} -> {edge} ({h[edge]})')
+                visited.add(edge)
+                heappush(min_heap, (h[edge], edge))
+
+    print(list)
+    return list
 
 # test cases - DO NOT MODIFY THESE
 def run_tests():
