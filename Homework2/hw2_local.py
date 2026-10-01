@@ -123,5 +123,5 @@ for i in range(100):
 
 fig, ax = pyplot.subplots()
 ax.plot([x[1] for x in best_result])
-fig.savefig(Path(__file__).parent / "local.png")
+fig.savefig(Path(__file__).parent / "local_search.png")
 pyplot.show()
