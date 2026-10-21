@@ -24,7 +24,7 @@ label_test = data[n-num_test:,-1]
 # now, pick the percentage of data used for training
 # remember we should be able to observe overfitting with this pick
 # note: maximum percentage is 0.75
-per = ...
+per = 0.75
 num_train = int(n*per)
 sample_train = data[0:num_train,0:-1]
 label_train = data[0:num_train,-1]
@@ -37,7 +37,10 @@ label_train = data[0:num_train,-1]
 # Pick 5 candidate values for alpha (in ascending order)
 # Remember we should aim to observe both overfitting and underfitting from these values
 # Suggestion: the first value should be very small and the last should be large
-alpha_vec = [0.5, 0.5, 0.5, 0.5, 0.5]
+alpha_vec = [1e-3, 1e-1, 1e1, 1e3, 1e5]
+
+k = 5
+er_valid_alpha = []
 # --- end of task --- #
 
 er_train_alpha = []
@@ -53,11 +56,21 @@ for alpha in alpha_vec:
     # training set into k-folds) to get the
     # validation error for each candidate alpha value
     # store it in "er_valid"
-    # ......
-    # ......
-    # ......
-    # ......
+    folds = np.array_split(np.arange(num_train), k)
+    er_folds = []
+    for i in range(k):
+        val_idx = folds[i]
+        tr_idx  = np.concatenate([folds[j] for j in range(k) if j != i])
+
+        model.fit(sample_train[tr_idx], label_train[tr_idx])
+        pred = model.predict(sample_train[val_idx])
+        er_folds.append(np.mean((pred - label_train[val_idx])**2))
+
+    er_valid = np.mean(er_folds)
     er_valid_alpha.append(er_valid)
+
+for i in range(len(er_valid_alpha)):
+    print(f"{alpha_vec[i]} | {er_valid_alpha[i]}")
     # --- end of task --- #
 
 
