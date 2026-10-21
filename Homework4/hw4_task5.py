@@ -2,19 +2,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # --- Your Task --- #
-# import necessary library 
+# import necessary library
 # if you need more libraries, just import them
 from sklearn.linear_model import LogisticRegression
 # ......
 # --- end of task --- #
 
-# load an imbalanced data set 
-# there are 50 positive class instances 
-# there are 500 negative class instances 
+# load an imbalanced data set
+# there are 50 positive class instances
+# there are 500 negative class instances
 data = np.loadtxt('diabetes_new.csv', delimiter=',', skiprows=1)
 [n,p] = np.shape(data)
 
-# always use last 25% data for testing 
+# always use last 25% data for testing
 num_test = int(0.25*n)
 sample_test = data[n-num_test:,0:-1]
 label_test = data[n-num_test:,-1]
@@ -28,7 +28,7 @@ auc_base_per = []
 acc_yours_per = []
 auc_yours_per = []
 
-for per in num_train_per: 
+for per in num_train_per:
 
     # create training data and label
     num_train = int(n*per)
@@ -38,26 +38,26 @@ for per in num_train_per:
     model = LogisticRegression()
 
     # --- Your Task --- #
-    # Implement a baseline method that standardly trains 
+    # Implement a baseline method that standardly trains
     # the model using sample_train and label_train
     # ......
     # ......
     # ......
-    
+
     # evaluate model testing accuracy and stores it in "acc_base"
     # ......
     acc_base_per.append(acc_base)
-    
+
     # evaluate model testing AUC score and stores it in "auc_base"
     # ......
     auc_base_per.append(auc_base)
     # --- end of task --- #
-    
-    
+
+
     # --- Your Task --- #
-    # Now, implement your method 
-    # Aim to improve AUC score of baseline 
-    # while maintaining accuracy as much as possible 
+    # Now, implement your method
+    # Aim to improve AUC score of baseline
+    # while maintaining accuracy as much as possible
     # ......
     # ......
     # ......
@@ -68,9 +68,9 @@ for per in num_train_per:
     # ......
     auc_yours_per.append(auc_yours)
     # --- end of task --- #
-    
 
-plt.figure()    
+
+plt.figure()
 plt.plot(num_train_per,acc_base_per, label='Base Accuracy')
 plt.plot(num_train_per,acc_yours_per, label='Your Accuracy')
 plt.xlabel('Percentage of Training Data')
@@ -84,6 +84,3 @@ plt.plot(num_train_per,auc_yours_per, label='Your AUC Score')
 plt.xlabel('Percentage of Training Data')
 plt.ylabel('Classification AUC Score')
 plt.legend()
-    
-
-
