@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 # import necessary library
 # if you need more libraries, just import them
 from sklearn.linear_model import Ridge
-# ......
+import csv
 # --- end of task --- #
 
 # load a data set for regression
@@ -69,9 +69,11 @@ for alpha in alpha_vec:
     er_valid = np.mean(er_folds)
     er_valid_alpha.append(er_valid)
 
-for i in range(len(er_valid_alpha)):
-    print(f"{alpha_vec[i]} | {er_valid_alpha[i]}")
-    # --- end of task --- #
+with open('table1.csv', 'w+') as file:
+    writer = csv.writer(file)
+    writer.writerow(['Hyper-Parameter', 'Validation Error'])
+    for i in range(len(alpha_vec)):
+        writer.writerow([alpha_vec[i], er_valid_alpha[i]])
 
 
 # Now you should have obtained a validation error for each alpha value
