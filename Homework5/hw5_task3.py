@@ -20,26 +20,25 @@ sample = data[:,0:-1]
 
 # --- Your Task --- #
 # pick a proper number of clusters
-k = ...
+k = 3
 # --- end of task --- #
 
 
 # --- Your Task --- #
 # implement the Kmeans clustering algorithm
 # you need to first randomly initialize k cluster centers
-# ......
-# ......
-# then start a loop
-# ......
-# ......
-# ......
-# when clustering is done,
-# store the clustering label in `label_cluster'
-# cluster index starts from 0 e.g.,
-# label_cluster[0] = 1 means the 1st point assigned to cluster 1
-# label_cluster[1] = 0 means the 2nd point assigned to cluster 0
-# label_cluster[2] = 2 means the 3rd point assigned to cluster 2
-label_cluster = ...
+rng = np.random.default_rng(0)
+centers = sample[rng.choice(n, k, replace=False)]   # random init from data points
+label_cluster = np.zeros(n, dtype=int)
+for _ in range(100):
+    dist = np.linalg.norm(sample[:, None, :] - centers[None, :, :], axis=2)
+    new_label = np.argmin(dist, axis=1)
+
+    new_centers = np.array([sample[new_label == j].mean(axis=0) if np.any(new_label == j)
+                            else centers[j] for j in range(k)])
+    if np.array_equal(new_label, label_cluster) and np.allclose(new_centers, centers):
+        break
+    label_cluster, centers = new_label, new_centers
 # --- end of task --- #
 
 
@@ -52,3 +51,5 @@ colors = ['blue','red','green','m']
 for i in range(k):
      idx = np.where(label_cluster == i)
      plt.scatter(sample_pca[idx,0],sample_pca[idx,1],color=colors[i],facecolors='none')
+
+plt.show()
