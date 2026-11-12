@@ -55,12 +55,15 @@ print(er_gap)
 # --- Your Task --- #
 # now, implement whatever method you choose
 # aim to reduce the gap between two errors
-# ......
-# ......
-# ......
+label_pred = np.zeros(len(label_test))
+for g in [0, 1]:
+    tr = sample_train[:, 0] == g
+    te = sample_test[:, 0] == g
+    m = LinearDiscriminantAnalysis()
+    m.fit(sample_train[tr], label_train[tr])
+    label_pred[te] = m.predict(sample_test[te])
 # whatever method you have, store your model prediction
 # on testing set in "label_pred". Then run the following code
-label_pred = model.predict(sample_test)
 idx_female = np.where(sample_test[:,0]==1)[0]
 idx_male = np.where(sample_test[:,0]==0)[0]
 er_female = 1-accuracy_score(label_test[idx_female],label_pred[idx_female])
