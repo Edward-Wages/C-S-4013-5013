@@ -28,7 +28,7 @@ label_test = data[n - num_test :, -1]
 # pick a proper number of iterations
 num_iter = 1000
 # randomly initialize your w
-w = [random() * 0.01] * p
+w = np.random.rand(p) * 0.01
 
 learning_rate = 0.01
 
