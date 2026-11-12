@@ -12,7 +12,7 @@ from random import random
 
 # -------------------------------------
 # load data
-data = np.loadtxt("datasets/crimerate.csv", delimiter=",")
+data = np.loadtxt("crimerate.csv", delimiter=",")
 [n, p] = np.shape(data)
 # 75% for training, 25% for testing
 num_train = int(0.75 * n)
@@ -58,5 +58,4 @@ plt.figure()
 plt.plot(er_test)
 plt.xlabel("Iteration")
 plt.ylabel("Mean Square Error")
-plt.savefig("figure2.png")
 plt.show()
