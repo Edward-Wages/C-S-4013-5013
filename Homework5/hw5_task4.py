@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 # -------------------------------------
 # load data
-data = np.loadtxt('diabetes.csv', delimiter=',')
+data = np.loadtxt('datasets/diabetes.csv', delimiter=',')
 [n,p] = np.shape(data)
 # 75% for training, 25% for testing
 num_train = int(0.75*n)
@@ -25,23 +25,27 @@ label_test = data[n-num_test:,-1]
 
 # --- Your Task --- #
 # pick five values of k by yourself
-k_values = [1,1,1,1,1]
+k_values = [1, 5, 15, 50, 200]
 # --- end of task --- #
 
 er_test = []
 for k in k_values:
     # --- Your Task --- #
     # implement the kNN classification method
-    # ......
-    # ......
-    # ......
+    preds = []
+    for x in sample_test:
+        dists = np.linalg.norm(sample_train - x, axis=1)
+        nn = np.argsort(dists)[:k]
+        preds.append(1 if np.mean(label_train[nn]) >= 0.5 else 0)
+    preds = np.array(preds)
 
     # store classification error on testing data here
-    er = ......
+    er = np.mean(preds != label_test)
     er_test.append(er)
 # --- end of task --- #
 
 plt.figure()
-plt.plot(er_test)
+plt.plot(k_values, er_test)
 plt.xlabel('k')
 plt.ylabel('Classification Error')
+plt.show()
